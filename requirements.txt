@@ -1,0 +1,11 @@
+# PARCS-Python встановлюється з GitHub
+# Виконайте: git clone https://github.com/Hummer12007/parcs-python.git
+# Потім: cd parcs-python && pip install -r requirements.txt
+
+# Залежності для PARCS-Python
+Pyro4>=4.82
+netifaces
+py-cpuinfo
+flask
+requests
+
