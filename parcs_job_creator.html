@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PARCS - Створення Job з прикладами</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .example-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .example-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f9f9f9;
+        }
+        
+        .example-card:hover {
+            border-color: #667eea;
+            background: #f0f0ff;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+        
+        .example-card.selected {
+            border-color: #667eea;
+            background: #e8eaff;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+        
+        .example-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .example-details {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .example-workers {
+            font-size: 11px;
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        .custom-section {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #e0e0e0;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus, input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .config-section {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .config-section input {
+            background: white;
+        }
+        
+        .workers-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .worker-btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+            text-align: center;
+        }
+        
+        .worker-btn:hover {
+            border-color: #667eea;
+            background: #f0f0ff;
+        }
+        
+        .worker-btn.selected {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+        
+        .file-info {
+            margin-top: 8px;
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .file-info strong {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 PARCS Job Creator</h1>
+        <p class="subtitle">Виберіть готовий приклад або створіть свій job</p>
+        
+        <div class="config-section">
+            <div class="form-group">
+                <label>PARCS Master IP:</label>
+                <input type="text" id="masterIp" value="34.88.235.160" placeholder="34.88.235.160">
+            </div>
+            <div class="form-group">
+                <label>PARCS Port:</label>
+                <input type="text" id="masterPort" value="8080" placeholder="8080">
+            </div>
+            <div class="form-group">
+                <label>Solution File (prime_solution.py):</label>
+                <input type="file" id="solutionFile" accept=".py" style="padding: 8px;" onchange="updateSolutionFileInfo()">
+                <div id="solutionFileInfo" class="file-info" style="display: none;">
+                    <strong>Вибрано:</strong> <span id="solutionFileName"></span>
+                </div>
+                <small style="color: #666; font-size: 12px;">Автоматично використовується prime_solution.py при виборі прикладу</small>
+            </div>
+            <div class="form-group">
+                <label>Input File (опціонально, вибирається автоматично):</label>
+                <input type="file" id="inputFile" accept=".txt" style="padding: 8px;" onchange="updateInputFileInfo()">
+                <div id="inputFileInfo" class="file-info" style="display: none;">
+                    <strong>Вибрано:</strong> <span id="inputFileName"></span>
+                </div>
+                <small style="color: #666; font-size: 12px;">Можна вибрати вручну або автоматично при виборі прикладу</small>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">📋 Готові приклади</div>
+            <div class="example-grid" id="examplesGrid"></div>
+        </div>
+        
+        <div class="custom-section">
+            <div class="section-title">⚙️ Або створіть свій job</div>
+            <div class="form-group">
+                <label>Назва Job:</label>
+                <input type="text" id="jobName" placeholder="My Prime Search Job">
+            </div>
+            <div class="form-group">
+                <label>Початок діапазону:</label>
+                <input type="number" id="rangeStart" value="1" min="1">
+            </div>
+            <div class="form-group">
+                <label>Кінець діапазону:</label>
+                <input type="number" id="rangeEnd" value="10000" min="1">
+            </div>
+            <div class="form-group">
+                <label>Кількість Workers:</label>
+                <div class="workers-buttons">
+                    <button type="button" class="worker-btn" onclick="selectWorkers('')" id="workersBtnAll">Всі</button>
+                    <button type="button" class="worker-btn" onclick="selectWorkers('1')" id="workersBtn1">1 Worker</button>
+                    <button type="button" class="worker-btn" onclick="selectWorkers('2')" id="workersBtn2">2 Workers</button>
+                    <button type="button" class="worker-btn" onclick="selectWorkers('3')" id="workersBtn3">3 Workers</button>
+                </div>
+                <input type="hidden" id="workersCount" value="">
+            </div>
+        </div>
+        
+        <div class="button-group">
+            <button class="btn-secondary" onclick="resetForm()">Очистити</button>
+            <button class="btn-primary" onclick="createJob()">Створити Job</button>
+        </div>
+        
+        <div id="status" class="status"></div>
+    </div>
+    
+    <script>
+        const examples = [
+            { name: "Малий (1-1K)", start: 1, end: 1000, workers: null, file: "prime_input_1000.txt" },
+            { name: "Середній (1-10K)", start: 1, end: 10000, workers: null, file: "prime_input_10000.txt" },
+            { name: "Великий (1-100K)", start: 1, end: 100000, workers: null, file: "prime_input_100000.txt" },
+            { name: "Дуже великий (1-1M)", start: 1, end: 1000000, workers: null, file: "prime_input_1000000.txt" },
+            { name: "10K - 1 worker", start: 1, end: 10000, workers: 1, file: "prime_input_10000_1worker.txt" },
+            { name: "10K - 2 workers", start: 1, end: 10000, workers: 2, file: "prime_input_10000_2workers.txt" },
+            { name: "10K - 3 workers", start: 1, end: 10000, workers: 3, file: "prime_input_10000_3workers.txt" },
+            { name: "100K - 1 worker", start: 1, end: 100000, workers: 1, file: "prime_input_100000_1worker.txt" },
+            { name: "100K - 2 workers", start: 1, end: 100000, workers: 2, file: "prime_input_100000_2workers.txt" },
+            { name: "100K - 3 workers", start: 1, end: 100000, workers: 3, file: "prime_input_100000_3workers.txt" },
+            { name: "1M - 1 worker", start: 1, end: 1000000, workers: 1, file: "prime_input_1000000_1worker.txt" },
+            { name: "1M - 2 workers", start: 1, end: 1000000, workers: 2, file: "prime_input_1000000_2workers.txt" },
+            { name: "1M - 3 workers", start: 1, end: 1000000, workers: 3, file: "prime_input_1000000_3workers.txt" }
+        ];
+        
+        let selectedExample = null;
+        
+        function renderExamples() {
+            const grid = document.getElementById('examplesGrid');
+            grid.innerHTML = '';
+            
+            examples.forEach((example, index) => {
+                const card = document.createElement('div');
+                card.className = 'example-card';
+                card.onclick = () => selectExample(index);
+                
+                const workersText = example.workers 
+                    ? `${example.workers} worker${example.workers > 1 ? 's' : ''}` 
+                    : 'Всі workers';
+                
+                card.innerHTML = `
+                    <div class="example-name">${example.name}</div>
+                    <div class="example-details">Діапазон: ${example.start.toLocaleString()} - ${example.end.toLocaleString()}</div>
+                    <div class="example-workers">${workersText}</div>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+        
+        function selectExample(index) {
+            selectedExample = examples[index];
+            
+            // Update UI
+            document.querySelectorAll('.example-card').forEach((card, i) => {
+                card.classList.toggle('selected', i === index);
+            });
+            
+            // Update form
+            document.getElementById('rangeStart').value = selectedExample.start;
+            document.getElementById('rangeEnd').value = selectedExample.end;
+            selectWorkers(selectedExample.workers || '');
+            
+            // Try to load input file automatically
+            loadInputFile(selectedExample.file);
+            
+            showStatus(`✅ Вибрано: ${selectedExample.name}. Файл: ${selectedExample.file}`, 'info');
+        }
+        
+        function selectWorkers(count) {
+            document.getElementById('workersCount').value = count;
+            
+            // Update button styles
+            document.getElementById('workersBtnAll').classList.toggle('selected', count === '');
+            document.getElementById('workersBtn1').classList.toggle('selected', count === '1');
+            document.getElementById('workersBtn2').classList.toggle('selected', count === '2');
+            document.getElementById('workersBtn3').classList.toggle('selected', count === '3');
+        }
+        
+        let selectedInputFileContent = null;
+        let selectedInputFileName = null;
+        
+        async function loadInputFile(filename) {
+            try {
+                const response = await fetch(filename);
+                if (response.ok) {
+                    const text = await response.text();
+                    selectedInputFileContent = text;
+                    selectedInputFileName = filename;
+                    
+                    // Show info
+                    document.getElementById('inputFileName').textContent = filename + ' (завантажено автоматично)';
+                    document.getElementById('inputFileInfo').style.display = 'block';
+                    
+                    showStatus(`✅ Автоматично завантажено: ${filename}`, 'info');
+                } else {
+                    selectedInputFileContent = null;
+                    selectedInputFileName = null;
+                    showStatus(`⚠ Файл ${filename} не знайдено. Будь ласка, виберіть файл вручну.`, 'error');
+                }
+            } catch (error) {
+                selectedInputFileContent = null;
+                selectedInputFileName = null;
+                showStatus(`⚠ Не вдалося завантажити ${filename}. Виберіть файл вручну.`, 'error');
+            }
+        }
+        
+        function updateSolutionFileInfo() {
+            const input = document.getElementById('solutionFile');
+            const info = document.getElementById('solutionFileInfo');
+            const name = document.getElementById('solutionFileName');
+            
+            if (input.files && input.files.length > 0) {
+                name.textContent = input.files[0].name;
+                info.style.display = 'block';
+            } else {
+                info.style.display = 'none';
+            }
+        }
+        
+        function updateInputFileInfo() {
+            const input = document.getElementById('inputFile');
+            const info = document.getElementById('inputFileInfo');
+            const name = document.getElementById('inputFileName');
+            
+            if (input.files && input.files.length > 0) {
+                name.textContent = input.files[0].name;
+                info.style.display = 'block';
+                // Clear auto-loaded file when user selects manually
+                selectedInputFileContent = null;
+                selectedInputFileName = null;
+            } else if (selectedInputFileName) {
+                name.textContent = selectedInputFileName + ' (завантажено автоматично)';
+                info.style.display = 'block';
+            } else {
+                info.style.display = 'none';
+            }
+        }
+        
+        async function createJob() {
+            const masterIp = document.getElementById('masterIp').value.trim();
+            const masterPort = document.getElementById('masterPort').value.trim();
+            const jobName = document.getElementById('jobName').value.trim() || 'Prime Search Job';
+            const rangeStart = document.getElementById('rangeStart').value;
+            const rangeEnd = document.getElementById('rangeEnd').value;
+            const workersCount = document.getElementById('workersCount').value;
+            
+            if (!rangeStart || !rangeEnd) {
+                showStatus('Будь ласка, вкажіть діапазон!', 'error');
+                return;
+            }
+            
+            if (parseInt(rangeStart) >= parseInt(rangeEnd)) {
+                showStatus('Початок діапазону повинен бути менше кінця!', 'error');
+                return;
+            }
+            
+            showStatus('Створення job...', 'info');
+            
+            try {
+                // Create FormData
+                const formData = new FormData();
+                formData.append('job_name', jobName);
+                
+                // Add solution file
+                const solutionFileInput = document.getElementById('solutionFile');
+                let solutionFile;
+                
+                if (solutionFileInput.files && solutionFileInput.files.length > 0) {
+                    // Use selected file
+                    solutionFile = solutionFileInput.files[0];
+                } else {
+                    // Try to load from current directory
+                    try {
+                        const solutionResponse = await fetch('prime_solution.py');
+                        if (solutionResponse.ok) {
+                            const solutionBlob = await solutionResponse.blob();
+                            solutionFile = new File([solutionBlob], 'prime_solution.py', { type: 'text/x-python' });
+                        } else {
+                            throw new Error('Файл не знайдено');
+                        }
+                    } catch (e) {
+                        throw new Error('Будь ласка, виберіть файл prime_solution.py або переконайтеся, що він знаходиться в тій же папці, що й HTML файл.');
+                    }
+                }
+                
+                formData.append('solution_file', solutionFile, 'prime_solution.py');
+                
+                // Add input file - use selected file, auto-loaded file, or create from form
+                const inputFileInput = document.getElementById('inputFile');
+                let inputFile;
+                
+                if (inputFileInput.files && inputFileInput.files.length > 0) {
+                    // Use manually selected file
+                    inputFile = inputFileInput.files[0];
+                } else if (selectedInputFileContent) {
+                    // Use auto-loaded file
+                    const blob = new Blob([selectedInputFileContent], { type: 'text/plain' });
+                    inputFile = new File([blob], selectedInputFileName || 'input.txt', { type: 'text/plain' });
+                } else {
+                    // Create from form values
+                    let inputContent = `${rangeStart}\n${rangeEnd}\n`;
+                    if (workersCount) {
+                        inputContent += `${workersCount}\n`;
+                    }
+                    const inputBlob = new Blob([inputContent], { type: 'text/plain' });
+                    inputFile = new File([inputBlob], 'input.txt', { type: 'text/plain' });
+                }
+                
+                formData.append('input_file', inputFile, inputFile.name);
+                
+                // Send to PARCS
+                const url = `http://${masterIp}:${masterPort}/api/job`;
+                const response = await fetch(url, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (response.ok || response.status === 200) {
+                    showStatus(`✅ Job "${jobName}" успішно створено! Перейдіть до <a href="http://${masterIp}:${masterPort}/jobs" target="_blank">Jobs</a> для перегляду.`, 'success');
+                } else {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+            } catch (error) {
+                showStatus(`❌ Помилка: ${error.message}`, 'error');
+                console.error('Error:', error);
+            }
+        }
+        
+        function resetForm() {
+            selectedExample = null;
+            selectedInputFileContent = null;
+            selectedInputFileName = null;
+            document.querySelectorAll('.example-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            document.getElementById('jobName').value = '';
+            document.getElementById('rangeStart').value = 1;
+            document.getElementById('rangeEnd').value = 10000;
+            selectWorkers('');
+            document.getElementById('solutionFile').value = '';
+            document.getElementById('inputFile').value = '';
+            updateSolutionFileInfo();
+            updateInputFileInfo();
+            document.getElementById('status').style.display = 'none';
+        }
+        
+        // Initialize workers buttons
+        selectWorkers('');
+        
+        function showStatus(message, type) {
+            const status = document.getElementById('status');
+            status.className = `status ${type}`;
+            status.innerHTML = message;
+            status.style.display = 'block';
+        }
+        
+        // Initialize
+        renderExamples();
+    </script>
+</body>
+</html>
+
